@@ -107,6 +107,23 @@ const Work = () => {
    * that translates .work-flex horizontally.
    */
   useGSAP(() => {
+    // Mobile: skip GSAP animation, use native scroll-snap instead
+    if (window.innerWidth < 768) {
+      // Track active card on mobile via native scroll
+      const flex = document.querySelector(".work-flex");
+      const onScroll = () => {
+        const cards = document.querySelectorAll(".work-box");
+        let newIndex = 0;
+        cards.forEach((card, i) => {
+          const rect = card.getBoundingClientRect();
+          if (rect.left < window.innerWidth / 2) newIndex = i;
+        });
+        setActiveIndex(newIndex);
+      };
+      flex?.addEventListener("scroll", onScroll, { passive: true });
+      return () => flex?.removeEventListener("scroll", onScroll);
+    }
+
     // Calculate total horizontal scroll distance needed to show all project cards
     let translateX: number = 0;
 
@@ -218,10 +235,18 @@ const Work = () => {
                 className={`work-scroll-dot ${currentDot === dotIndex ? "active" : ""}`}
                 data-index={i}
                 onClick={() => {
-                  const st = ScrollTrigger.getById("work");
-                  if (st) {
-                    const progress = i / (projects.length - 1);
-                    smoother.scrollTo(st.start + (st.end - st.start) * progress, true);
+                  if (window.innerWidth < 768) {
+                    // Mobile: native scroll to card
+                    const cards = document.querySelectorAll(".work-box");
+                    if (cards[i]) {
+                      cards[i].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+                    }
+                  } else {
+                    const st = ScrollTrigger.getById("work");
+                    if (st) {
+                      const progress = i / (projects.length - 1);
+                      smoother.scrollTo(st.start + (st.end - st.start) * progress, true);
+                    }
                   }
                 }}
               />
