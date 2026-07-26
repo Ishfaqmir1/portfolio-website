@@ -146,20 +146,24 @@ div.resume-button span {
 }
 @media only screen and (min-width: 768px) {
   .resume-button {
+    position: fixed;
     left: auto;
-    right: 0;
+    right: 30px;
     bottom: 40px;
     transform: none;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 20px;
     letter-spacing: 4px;
     font-weight: 600;
-    gap: 5px;
+    gap: 6px;
+    flex-direction: column;
     color: #5e5e5e;
     padding: 0;
     border-radius: 0;
     background: none;
     border: none;
+    text-align: center;
+    writing-mode: horizontal-tb;
   }
   .resume-button:hover {
     color: #fff;
@@ -170,7 +174,9 @@ div.resume-button span {
   }
   div.resume-button span {
     color: #fff;
-    font-size: 23px;
-    margin-top: -1.5px;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
