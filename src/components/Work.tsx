@@ -13,6 +13,7 @@ import WorkImage from "./WorkImage";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { smoother } from "./Navbar";
 
 // Register GSAP plugins for scroll-driven horizontal animation
 gsap.registerPlugin(useGSAP);
@@ -160,37 +161,42 @@ const Work = () => {
         </h2>
         {/* Scroll indicator arrows */}
         <div className="work-scroll-indicator">
-          <span className="work-scroll-arrow left-arrow" onClick={() => {
+          <span className={`work-scroll-arrow left-arrow ${activeIndex <= 0 ? "arrow-disabled" : ""}`} onClick={() => {
             const st = ScrollTrigger.getById("work");
             if (st && activeIndex > 0) {
-              const progress = (activeIndex - 1) / (projects.length - 1);
-              st.scroll(st.start + (st.end - st.start) * progress);
+              const progress = (activeIndex - 2) / (projects.length - 1);
+              smoother.scrollTo(st.start + (st.end - st.start) * Math.max(0, progress), true);
             }
           }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </span>
           <div className="work-scroll-dots">
-            {projects.map((_, i) => (
-              <span
-                key={i}
-                className={`work-scroll-dot ${i === activeIndex ? "active" : ""}`}
-                data-index={i}
-                onClick={() => {
-                  // Scroll to the clicked project via ScrollTrigger
-                  const st = ScrollTrigger.getById("work");
-                  if (st) {
-                    const progress = i / (projects.length - 1);
-                    st.scroll(st.start + (st.end - st.start) * progress);
-                  }
-                }}
-              />
-            ))}
+            {projects.map((_, i) => {
+              // Show dots in pairs (every 2 projects)
+              const dotIndex = Math.floor(i / 2);
+              const currentDot = Math.floor(activeIndex / 2);
+              if (i % 2 !== 0) return null; // Only render for even indices
+              return (
+                <span
+                  key={i}
+                  className={`work-scroll-dot ${currentDot === dotIndex ? "active" : ""}`}
+                  data-index={i}
+                  onClick={() => {
+                    const st = ScrollTrigger.getById("work");
+                    if (st) {
+                      const progress = i / (projects.length - 1);
+                      smoother.scrollTo(st.start + (st.end - st.start) * progress, true);
+                    }
+                  }}
+                />
+              );
+            })}
           </div>
-          <span className="work-scroll-arrow right-arrow" onClick={() => {
+          <span className={`work-scroll-arrow right-arrow ${activeIndex >= projects.length - 2 ? "arrow-disabled" : ""}`} onClick={() => {
             const st = ScrollTrigger.getById("work");
-            if (st && activeIndex < projects.length - 1) {
-              const progress = (activeIndex + 1) / (projects.length - 1);
-              st.scroll(st.start + (st.end - st.start) * progress);
+            if (st && activeIndex < projects.length - 2) {
+              const progress = (activeIndex + 2) / (projects.length - 1);
+              smoother.scrollTo(st.start + (st.end - st.start) * Math.min(1, progress), true);
             }
           }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
