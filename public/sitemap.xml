@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  🔧 IMPORTANT: Replace YOUR-SITE with your actual deployment URL before going live
+     Example: https://ishfaq-mir.vercel.app/sitemap.xml
+
+  This is a single-page application (SPA), so only the root URL is listed.
+  All sections (About, Career, Work, Contact) are on the same page.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://YOUR-SITE.vercel.app/</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

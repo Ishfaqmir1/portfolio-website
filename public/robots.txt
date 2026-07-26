@@ -1,0 +1,11 @@
+# robots.txt for Ishfaq Mir Portfolio
+# Allow all search engines full access
+#
+# 🔧 IMPORTANT: Replace YOUR-SITE with your actual deployment URL before going live
+#    Example: https://ishfaq-mir.vercel.app/sitemap.xml
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://YOUR-SITE.vercel.app/sitemap.xml

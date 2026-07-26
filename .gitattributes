@@ -1,0 +1,2 @@
+# Git LFS is no longer needed - the app uses the encrypted .enc version
+# (character.glb was the source file, character.enc is what loads in-app)

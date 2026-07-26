@@ -1,0 +1,176 @@
+/* ========================================================================
+   SOCIAL ICONS & RESUME BUTTON  —  Fixed bottom bar
+   
+   Social icons adapt between:
+   - Mobile (< 900px): Horizontal row with circular badge backgrounds,
+     centered at the bottom. Resume button appears as a pill above icons.
+   - Desktop (>= 900px): Vertical column on the left side with mouse-follow
+     hover effect. Resume button is inline text on the bottom right.
+   ======================================================================== */
+
+.icons-section {
+  position: fixed;
+  max-width: var(--cMaxWidth);
+  width: var(--cWidth);
+  bottom: 0;
+  z-index: 99;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.social-icons {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  z-index: 999;
+  padding: 10px;
+  transform: translateX(-50%);
+}
+.social-icons:hover {
+  transition: 0.3s;
+  color: var(--backgroundColor);
+}
+.social-icons a:hover {
+  color: var(--backgroundColor);
+}
+.social-icons span {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+.social-icons span:hover {
+  background: rgba(194, 164, 255, 0.15);
+  border-color: var(--accentColor);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(194, 164, 255, 0.15);
+}
+.social-icons a {
+  display: flex;
+  font-size: 20px;
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+.social-icons a:hover {
+  color: var(--accentColor);
+}
+.resume-button {
+  position: absolute;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  bottom: 105px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  text-wrap: nowrap;
+  letter-spacing: 3px;
+  font-size: 13px;
+  line-height: 13px;
+  font-weight: 500;
+  color: #ccc;
+  cursor: pointer;
+  padding: 10px 22px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+.resume-button:hover {
+  color: #fff;
+  background: rgba(194, 164, 255, 0.15);
+  border-color: var(--accentColor);
+  box-shadow: 0 4px 20px rgba(194, 164, 255, 0.15);
+  transform: translateX(-50%) translateY(-2px);
+}
+div.resume-button span {
+  color: var(--accentColor);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+.check-line {
+  position: fixed;
+  top: 655px;
+  left: 0;
+  height: 1px;
+  background-color: #ffffff;
+  width: 100%;
+  z-index: 99999;
+}
+@media only screen and (min-width: 900px) {
+  .social-icons {
+    left: -20px;
+    bottom: 20px;
+    flex-direction: column;
+    gap: 20px;
+    transform: none;
+  }
+  .social-icons span {
+    width: 50px;
+    height: 50px;
+    position: relative;
+    background: none;
+    border: none;
+    border-radius: 0;
+  }
+  .social-icons span:hover {
+    background: none;
+    border-color: transparent;
+    transform: none;
+    box-shadow: none;
+  }
+  .social-icons a {
+    --siLeft: 50%;
+    --siTop: 50%;
+    position: absolute;
+    left: var(--siLeft, 50%);
+    top: var(--siTop, 50%);
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+    will-change: left, top;
+    transition: transform 0.3s ease-out;
+  }
+  .social-icons a:hover {
+    color: var(--backgroundColor);
+  }
+}
+@media only screen and (min-width: 768px) {
+  .resume-button {
+    left: auto;
+    right: 0;
+    bottom: 40px;
+    transform: none;
+    font-size: 20px;
+    line-height: 20px;
+    letter-spacing: 4px;
+    font-weight: 600;
+    gap: 5px;
+    color: #5e5e5e;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    border: none;
+  }
+  .resume-button:hover {
+    color: #fff;
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+  div.resume-button span {
+    color: #fff;
+    font-size: 23px;
+    margin-top: -1.5px;
+  }
+}
