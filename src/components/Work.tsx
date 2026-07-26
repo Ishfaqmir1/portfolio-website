@@ -7,6 +7,7 @@
  * external link (website or GitHub). Projects without links hide the arrow icon.
  */
 
+import { useState } from "react";
 import "./styles/Work.css";
 import WorkImage from "./WorkImage";
 import gsap from "gsap";
@@ -32,6 +33,7 @@ const projects = [
       "Label generation, order management workflow, inventory, supplier, and products management modules. Built Shopify integration, product synchronization, RBAC, and scalable REST APIs.",
     tools: "Next.js, Node.js, PostgreSQL, Prisma, AWS",
     link: "https://unicsi.com",
+    image: "/images/unicsi.webp",
   },
   {
     name: "Smart Orchard IoT Platform",
@@ -40,6 +42,7 @@ const projects = [
       "Weather, soil, and device monitoring dashboards with real-time analytics. Integrated AWS IoT Core, MQTT, Lambda, irrigation automation, disease recommendations, and alert notifications.",
     tools: "React.js, Next.js, Node.js, PostgreSQL, AWS IoT",
     link: "https://dev.gongulos.applekul.com",
+    image: "/images/project2.webp",
   },
   {
     name: "Enterprise HRMS SaaS Platform",
@@ -48,6 +51,7 @@ const projects = [
       "Employee, attendance, leave, payroll, organization, and role management modules. Built onboarding, subscription plans, approval workflows, analytics dashboards, and employee self-service.",
     tools: "Next.js, NestJS, PostgreSQL, Prisma, Redis, AWS",
     link: "https://github.com/ishfaqmir",
+    image: "/images/placeholder.webp",
   },
   {
     name: "POS & Inventory Management",
@@ -56,6 +60,7 @@ const projects = [
       "POS billing, inventory, sales, customer, invoice, and reporting modules. Built analytics dashboards, stock management, and sales reporting features.",
     tools: "React.js, Next.js, Node.js, PostgreSQL",
     link: "https://kash-x.netlify.app",
+    image: "/images/pos-inventory%20management.webp",
   },
   {
     name: "YouTube Clone",
@@ -64,6 +69,7 @@ const projects = [
       "Full-featured video streaming platform with user authentication, video upload, search, comments, likes, and subscriptions. Built with modern React architecture and RESTful APIs.",
     tools: "React.js, Next.js, Node.js, Express.js, MongoDB, JWT, TypeScript",
     link: "",
+    image: "/images/placeholder.webp",
   },
   {
     name: "E-Commerce Web App",
@@ -72,6 +78,7 @@ const projects = [
       "Complete e-commerce solution with product catalog, shopping cart, checkout flow, payment integration, order tracking, and admin dashboard for inventory management.",
     tools: "React.js, Next.js, Redux Toolkit, Node.js, Express.js, TypeScript",
     link: "",
+    image: "/images/placeholder.webp",
   },
   {
     name: "Smart Farmer Guide",
@@ -80,6 +87,7 @@ const projects = [
       "Smart agriculture advisory system providing crop recommendations, weather forecasts, pest alerts, and fertilizer suggestions based on soil data and regional analytics.",
     tools: "React.js, Next.js, Node.js, MongoDB, APIs, TypeScript",
     link: "",
+    image: "/images/placeholder.webp",
   },
 ];
 
@@ -89,6 +97,8 @@ const projects = [
  * horizontally as the user scrolls, creating a carousel-like browsing experience.
  */
 const Work = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   /**
    * Initialize GSAP horizontal scroll animation.
    * Calculates the total scroll distance based on the number of project cards
@@ -120,9 +130,13 @@ const Work = () => {
         trigger: ".work-section",
         start: "top top",
         end: `+=${translateX}`,
-        scrub: true,         // Link animation progress to scroll position
+        scrub: 0.5,          // Link animation progress to scroll position with slight smoothing
         pin: true,            // Pin the section while scrolling through cards
         id: "work",
+        onUpdate: (self) => {
+          const idx = Math.round(self.progress * (projects.length - 1));
+          setActiveIndex(Math.min(idx, projects.length - 1));
+        },
       },
     });
 
@@ -144,6 +158,44 @@ const Work = () => {
         <h2>
           My <span>Work</span>
         </h2>
+        {/* Scroll indicator arrows */}
+        <div className="work-scroll-indicator">
+          <span className="work-scroll-arrow left-arrow" onClick={() => {
+            const st = ScrollTrigger.getById("work");
+            if (st && activeIndex > 0) {
+              const progress = (activeIndex - 1) / (projects.length - 1);
+              st.scroll(st.start + (st.end - st.start) * progress);
+            }
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </span>
+          <div className="work-scroll-dots">
+            {projects.map((_, i) => (
+              <span
+                key={i}
+                className={`work-scroll-dot ${i === activeIndex ? "active" : ""}`}
+                data-index={i}
+                onClick={() => {
+                  // Scroll to the clicked project via ScrollTrigger
+                  const st = ScrollTrigger.getById("work");
+                  if (st) {
+                    const progress = i / (projects.length - 1);
+                    st.scroll(st.start + (st.end - st.start) * progress);
+                  }
+                }}
+              />
+            ))}
+          </div>
+          <span className="work-scroll-arrow right-arrow" onClick={() => {
+            const st = ScrollTrigger.getById("work");
+            if (st && activeIndex < projects.length - 1) {
+              const progress = (activeIndex + 1) / (projects.length - 1);
+              st.scroll(st.start + (st.end - st.start) * progress);
+            }
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </div>
         <div className="work-flex">
           {projects.map((project, index) => (
             <div className="work-box" key={index}>
@@ -162,7 +214,7 @@ const Work = () => {
               </div>
               {/* WorkImage renders the project thumbnail with optional link icon */}
               <WorkImage
-                image="/images/placeholder.webp"
+                image={project.image}
                 alt={project.name}
                 link={project.link}
               />
