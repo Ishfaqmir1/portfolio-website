@@ -148,22 +148,24 @@ div.resume-button span {
   .resume-button {
     position: fixed;
     left: auto;
-    right: 30px;
-    bottom: 40px;
+    right: 25px;
+    bottom: 80px;
     transform: none;
-    font-size: 18px;
-    line-height: 20px;
-    letter-spacing: 4px;
-    font-weight: 600;
-    gap: 6px;
-    flex-direction: column;
+    font-size: 14px;
+    line-height: 14px;
+    letter-spacing: 6px;
+    font-weight: 500;
+    gap: 12px;
+    flex-direction: row;
+    align-items: center;
     color: #5e5e5e;
     padding: 0;
     border-radius: 0;
     background: none;
     border: none;
     text-align: center;
-    writing-mode: horizontal-tb;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
   }
   .resume-button:hover {
     color: #fff;
@@ -174,9 +176,10 @@ div.resume-button span {
   }
   div.resume-button span {
     color: #fff;
-    font-size: 26px;
+    font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    writing-mode: horizontal-tb;
   }
 }

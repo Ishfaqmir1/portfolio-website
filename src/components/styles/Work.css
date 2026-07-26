@@ -30,10 +30,10 @@
   position: relative;
 }
 .work-box {
-  padding: 80px;
+  padding: 60px;
   display: flex;
   flex-direction: column;
-  width: 600px;
+  flex: 0 0 calc(50% - 1px);
   box-sizing: border-box;
   border-right: 1px solid #363636;
   flex-shrink: 0;
@@ -237,8 +237,8 @@
     font-size: 15px;
   }
   .work-box {
-    width: 450px;
-    padding: 50px;
+    flex: 0 0 calc(50% - 1px);
+    padding: 40px;
   }
   .work-flex {
     margin-left: -50px;
@@ -248,9 +248,9 @@
     font-size: 50px;
   }
 }
-@media only screen and (max-width: 1400px) {
+@media only screen and (max-width: 1024px) {
   .work-box {
-    width: 350px;
+    flex: 0 0 calc(50% - 1px);
     padding: 30px;
   }
   .work-flex {
