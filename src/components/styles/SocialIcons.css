@@ -148,7 +148,7 @@ div.resume-button span {
   .resume-button {
     position: fixed;
     left: auto;
-    right: 25px;
+    right: 15px;
     bottom: 80px;
     transform: none;
     font-size: 14px;
@@ -158,7 +158,7 @@ div.resume-button span {
     gap: 12px;
     flex-direction: row;
     align-items: center;
-    color: #b8b8b8;
+    color: var(--accentColor);
     padding: 0;
     border-radius: 0;
     background: none;
@@ -166,6 +166,7 @@ div.resume-button span {
     text-align: center;
     writing-mode: vertical-rl;
     text-orientation: mixed;
+    text-shadow: 0 0 20px rgba(194, 164, 255, 0.3);
   }
   .resume-button:hover {
     color: #fff;
@@ -173,6 +174,7 @@ div.resume-button span {
     border-color: transparent;
     box-shadow: none;
     transform: none;
+    text-shadow: 0 0 30px rgba(194, 164, 255, 0.6);
   }
   div.resume-button span {
     color: #fff;
@@ -181,6 +183,7 @@ div.resume-button span {
     align-items: center;
     justify-content: center;
     writing-mode: horizontal-tb;
+    filter: drop-shadow(0 0 8px rgba(194, 164, 255, 0.4));
   }
 }
 
@@ -190,7 +193,7 @@ div.resume-button span {
   .resume-button {
     position: fixed;
     left: auto;
-    right: 10px;
+    right: 5px;
     bottom: 140px;
     transform: none;
     font-size: 11px;
@@ -200,7 +203,7 @@ div.resume-button span {
     gap: 8px;
     flex-direction: row;
     align-items: center;
-    color: #b8b8b8;
+    color: var(--accentColor);
     padding: 0;
     border-radius: 0;
     background: none;
@@ -209,6 +212,7 @@ div.resume-button span {
     writing-mode: vertical-rl;
     text-orientation: mixed;
     z-index: 999;
+    text-shadow: 0 0 16px rgba(194, 164, 255, 0.25);
   }
   .resume-button:active {
     color: #fff;
@@ -220,5 +224,6 @@ div.resume-button span {
     align-items: center;
     justify-content: center;
     writing-mode: horizontal-tb;
+    filter: drop-shadow(0 0 6px rgba(194, 164, 255, 0.3));
   }
 }

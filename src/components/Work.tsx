@@ -159,73 +159,74 @@ const Work = () => {
         <h2>
           My <span>Work</span>
         </h2>
-        {/* Scroll indicator arrows */}
-        <div className="work-scroll-indicator">
-          <span className={`work-scroll-arrow left-arrow ${activeIndex <= 0 ? "arrow-disabled" : ""}`} onClick={() => {
+        <div className="work-cards-wrapper">
+          {/* Left side arrow overlay */}
+          <span className={`work-nav-arrow work-nav-left ${activeIndex <= 0 ? "arrow-disabled" : ""}`} onClick={() => {
             const st = ScrollTrigger.getById("work");
             if (st && activeIndex > 0) {
               const progress = (activeIndex - 2) / (projects.length - 1);
               smoother.scrollTo(st.start + (st.end - st.start) * Math.max(0, progress), true);
             }
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </span>
-          <div className="work-scroll-dots">
-            {projects.map((_, i) => {
-              // Show dots in pairs (every 2 projects)
-              const dotIndex = Math.floor(i / 2);
-              const currentDot = Math.floor(activeIndex / 2);
-              if (i % 2 !== 0) return null; // Only render for even indices
-              return (
-                <span
-                  key={i}
-                  className={`work-scroll-dot ${currentDot === dotIndex ? "active" : ""}`}
-                  data-index={i}
-                  onClick={() => {
-                    const st = ScrollTrigger.getById("work");
-                    if (st) {
-                      const progress = i / (projects.length - 1);
-                      smoother.scrollTo(st.start + (st.end - st.start) * progress, true);
-                    }
-                  }}
+          <div className="work-flex">
+            {projects.map((project, index) => (
+              <div className="work-box" key={index}>
+                <div className="work-info">
+                  <div className="work-title">
+                    <h3>0{index + 1}</h3>
+                    <div>
+                      <h4>{project.name}</h4>
+                      <p>{project.category}</p>
+                    </div>
+                  </div>
+                  <h4>Description</h4>
+                  <p>{project.description}</p>
+                  <h4 style={{ marginTop: 10 }}>Tools & features</h4>
+                  <p>{project.tools}</p>
+                </div>
+                <WorkImage
+                  image={project.image}
+                  alt={project.name}
+                  link={project.link}
                 />
-              );
-            })}
+              </div>
+            ))}
           </div>
-          <span className={`work-scroll-arrow right-arrow ${activeIndex >= projects.length - 2 ? "arrow-disabled" : ""}`} onClick={() => {
+          {/* Right side arrow overlay */}
+          <span className={`work-nav-arrow work-nav-right ${activeIndex >= projects.length - 2 ? "arrow-disabled" : ""}`} onClick={() => {
             const st = ScrollTrigger.getById("work");
             if (st && activeIndex < projects.length - 2) {
               const progress = (activeIndex + 2) / (projects.length - 1);
               smoother.scrollTo(st.start + (st.end - st.start) * Math.min(1, progress), true);
             }
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </span>
         </div>
-        <div className="work-flex">
-          {projects.map((project, index) => (
-            <div className="work-box" key={index}>
-              <div className="work-info">
-                <div className="work-title">
-                  <h3>0{index + 1}</h3>
-                  <div>
-                    <h4>{project.name}</h4>
-                    <p>{project.category}</p>
-                  </div>
-                </div>
-                <h4>Description</h4>
-                <p>{project.description}</p>
-                <h4 style={{ marginTop: 10 }}>Tools & features</h4>
-                <p>{project.tools}</p>
-              </div>
-              {/* WorkImage renders the project thumbnail with optional link icon */}
-              <WorkImage
-                image={project.image}
-                alt={project.name}
-                link={project.link}
+        {/* Below cards: Progress dots indicator */}
+        <div className="work-scroll-indicator">
+          {projects.map((_, i) => {
+            const isDesktop = window.innerWidth > 768;
+            const dotIndex = isDesktop ? Math.floor(i / 2) : i;
+            const currentDot = isDesktop ? Math.floor(activeIndex / 2) : activeIndex;
+            if (isDesktop && i % 2 !== 0) return null;
+            return (
+              <span
+                key={i}
+                className={`work-scroll-dot ${currentDot === dotIndex ? "active" : ""}`}
+                data-index={i}
+                onClick={() => {
+                  const st = ScrollTrigger.getById("work");
+                  if (st) {
+                    const progress = i / (projects.length - 1);
+                    smoother.scrollTo(st.start + (st.end - st.start) * progress, true);
+                  }
+                }}
               />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
