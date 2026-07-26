@@ -114,13 +114,43 @@
 }
 
 @media only screen and (max-width: 768px) {
+  .work-section {
+    height: 70vh;
+  }
+  .work-flex {
+    margin-left: 0;
+    padding-right: 0;
+  }
+  .work-box {
+    flex: 0 0 100%;
+    padding: 20px;
+    min-width: 0;
+    gap: 25px;
+    border-right: none;
+  }
   .work-scroll-arrow {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.25), 0 4px 20px rgba(0, 0, 0, 0.3);
   }
   .work-scroll-arrow svg {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
+  }
+  .work-scroll-dot {
+    width: 10px;
+    height: 10px;
+  }
+  .work-scroll-dot.active {
+    width: 32px;
+    box-shadow: 0 0 24px rgba(168, 85, 247, 0.6);
+  }
+  .work-scroll-indicator {
+    gap: 16px;
+    padding: 15px 0 20px;
   }
 }
 
