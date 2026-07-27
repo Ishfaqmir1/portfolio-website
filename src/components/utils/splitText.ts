@@ -40,11 +40,12 @@ export default function setSplitText() {
           trigger: para.parentElement?.parentElement,
           toggleActions: ToggleAction,
           start: TriggerStart,
+          lazy: true,
         },
-        duration: 1,
-        ease: "power3.out",
+        duration: 0.8,
+        ease: "power2.out",
         y: 0,
-        stagger: 0.02,
+        stagger: 0.015,
       }
     );
   });
@@ -66,12 +67,13 @@ export default function setSplitText() {
           trigger: title.parentElement?.parentElement,
           toggleActions: ToggleAction,
           start: TriggerStart,
+          lazy: true,
         },
-        duration: 0.8,
-        ease: "power2.inOut",
+        duration: 0.6,
+        ease: "power2.out",
         y: 0,
         rotate: 0,
-        stagger: 0.03,
+        stagger: 0.02,
       }
     );
   });
