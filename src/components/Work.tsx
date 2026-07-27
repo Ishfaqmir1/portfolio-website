@@ -1,29 +1,18 @@
 /**
  * Work.tsx — Projects / Portfolio Showcase Section
- * 
- * Displays a horizontally scrollable carousel of project cards using GSAP
- * ScrollTrigger for the horizontal scroll animation. Each card shows the
- * project name, category, detailed description, tech stack, and an optional
- * external link (website or GitHub). Projects without links hide the arrow icon.
+ *
+ * Modern premium horizontal carousel with arrow navigation.
+ * Desktop: 2 projects visible at a time, horizontal scroll via arrows.
+ * Mobile: 1 project at a time with native scroll-snap.
  */
 
-import { useRef, useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import "./styles/Work.css";
 import WorkImage from "./WorkImage";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-// Register GSAP plugins for scroll-driven horizontal animation
-gsap.registerPlugin(useGSAP);
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 /**
  * Project data array — each object represents a portfolio project.
- * @property {string} name - Display name of the project
- * @property {string} category - Short category/subtitle
- * @property {string} description - Detailed project description highlighting key features
- * @property {string} tools - Comma-separated list of technologies used
- * @property {string} link - External URL (website or GitHub); empty string hides the link icon
  */
 const projects = [
   {
@@ -92,136 +81,115 @@ const projects = [
 ];
 
 /**
- * Work component — Renders the projects section with horizontal scroll.
- * Uses GSAP ScrollTrigger to pin the section and translate the flex container
- * horizontally as the user scrolls, creating a carousel-like browsing experience.
+ * Work component — Modern premium horizontal carousel for projects.
  */
 const Work = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+
+  // Desktop: 2 cards per page; Mobile: 1 card per page
+  const isDesktop = () => window.innerWidth >= 768;
+  const cardsPerPage = () => (isDesktop() ? 2 : 1);
+  const totalPages = Math.ceil(projects.length / cardsPerPage());
 
   /**
-   * Animate the GSAP timeline to a given progress value.
-   * This slides the cards horizontally WITHOUT scrolling the page.
-   * Uses a smooth tween with activeIndex tracking.
+   * Scroll the carousel to a specific page.
    */
-  const animateToProgress = (targetProgress: number) => {
-    const tl = timelineRef.current;
-    if (!tl) return;
-    gsap.to(tl, {
-      progress: targetProgress,
-      duration: 0.6,
-      ease: "power2.out",
-      onUpdate: () => {
-        const idx = Math.round(tl.progress() * (projects.length - 1));
-        setActiveIndex(Math.min(idx, projects.length - 1));
-      },
-    });
-  };
+  const scrollToPage = useCallback(
+    (page: number) => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const card = el.querySelector(".work-box") as HTMLElement | null;
+      if (!card) return;
+      const cardWidth = card.offsetWidth;
+      const gap = 0;
+      const cardsPer = cardsPerPage();
+      const targetIndex = page * cardsPer;
+      const targetScroll = targetIndex * (cardWidth + gap);
+      el.scrollTo({ left: targetScroll, behavior: "smooth" });
+      setActiveIndex(targetIndex);
+    },
+    []
+  );
+
+  const scrollPrev = useCallback(() => {
+    const cardsPer = cardsPerPage();
+    const currentPage = Math.floor(activeIndex / cardsPer);
+    scrollToPage(currentPage - 1);
+  }, [activeIndex, scrollToPage, cardsPerPage]);
+
+  const scrollNext = useCallback(() => {
+    const cardsPer = cardsPerPage();
+    const currentPage = Math.floor(activeIndex / cardsPer);
+    scrollToPage(currentPage + 1);
+  }, [activeIndex, scrollToPage, cardsPerPage]);
 
   /**
-   * Initialize GSAP horizontal scroll animation.
-   * Calculates the total scroll distance based on the number of project cards
-   * and their container width, then creates a pinned scroll-triggered animation
-   * that translates .work-flex horizontally.
+   * Track active index on scroll.
    */
-  useGSAP(() => {
-    // Mobile: skip GSAP animation, use native scroll-snap instead
-    if (window.innerWidth < 768) {
-      // Track active card on mobile via native scroll
-      const flex = document.querySelector(".work-flex");
-      const onScroll = () => {
-        const cards = document.querySelectorAll(".work-box");
-        let newIndex = 0;
-        cards.forEach((card, i) => {
-          const rect = card.getBoundingClientRect();
-          if (rect.left < window.innerWidth / 2) newIndex = i;
-        });
-        setActiveIndex(newIndex);
-      };
-      flex?.addEventListener("scroll", onScroll, { passive: true });
-      return () => flex?.removeEventListener("scroll", onScroll);
-    }
-
-    // Calculate total horizontal scroll distance needed to show all project cards
-    let translateX: number = 0;
-
-    function setTranslateX() {
-      const box = document.getElementsByClassName("work-box");
-      const rectLeft = document
-        .querySelector(".work-container")!
-        .getBoundingClientRect().left;
-      const rect = box[0].getBoundingClientRect();
-      const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
-      let padding: number =
-        parseInt(window.getComputedStyle(box[0]).padding) / 2;
-      // Total translate = (card width * card count) - (visible area width) + padding adjustment
-      translateX = rect.width * box.length - (rectLeft + parentWidth) + padding;
-    }
-
-    setTranslateX();
-
-    // Create GSAP timeline with ScrollTrigger for pinned horizontal scroll
-    let timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".work-section",
-        start: "top top",
-        end: `+=${translateX}`,
-        scrub: 0.5,          // Link animation progress to scroll position with slight smoothing
-        pin: true,            // Pin the section while scrolling through cards
-        id: "work",
-        onUpdate: (self) => {
-          const idx = Math.round(self.progress * (projects.length - 1));
-          setActiveIndex(Math.min(idx, projects.length - 1));
-        },
-      },
-    });
-
-    timelineRef.current = timeline;
-
-    // Animate the flex container to the left by the calculated distance
-    timeline.to(".work-flex", {
-      x: -translateX,
-      ease: "none",
-    });
-
-    // Clean up GSAP instances on unmount to prevent memory leaks
-    return () => {
-      timeline.kill();
-      ScrollTrigger.getById("work")?.kill();
-      timelineRef.current = null;
-    };
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardsPer = cardsPerPage();
+    const scrollLeft = el.scrollLeft;
+    const card = el.querySelector(".work-box") as HTMLElement | null;
+    if (!card) return;
+    const cardWidth = card.offsetWidth;
+    const approxIndex = Math.round(scrollLeft / cardWidth);
+    const snappedIndex = Math.min(
+      Math.max(0, Math.floor(approxIndex / cardsPer) * cardsPer),
+      projects.length - cardsPer
+    );
+    setActiveIndex(snappedIndex);
   }, []);
+
+  const cardsPer = cardsPerPage();
+  const currentPage = Math.floor(activeIndex / cardsPer);
+  const isFirstPage = currentPage === 0;
+  const isLastPage = currentPage >= totalPages - 1;
+
   return (
     <div className="work-section" id="work">
       <div className="work-container section-container">
-        <h2>
-          My <span>Work</span>
-        </h2>
+        {/* Header */}
+        <div className="work-header">
+          <h2>
+            My <span>Work</span>
+          </h2>
+        </div>
+
+        {/* Carousel wrapper */}
         <div className="work-cards-wrapper">
-          {/* Left side arrow overlay */}
-          <span className={`work-nav-arrow work-nav-left ${activeIndex <= 0 ? "arrow-disabled" : ""}`} onClick={() => {
-            const progress = Math.max(0, (activeIndex - 2) / (projects.length - 1));
-            animateToProgress(progress);
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          </span>
-          <div className="work-flex">
+          <div
+            className="work-flex"
+            ref={scrollRef}
+            onScroll={handleScroll}
+          >
             {projects.map((project, index) => (
               <div className="work-box" key={index}>
+                {/* Background gradient accent */}
+                <div className="work-box-accent" />
+
+                {/* Card number */}
+                <div className="work-box-number">0{index + 1}</div>
+
+                {/* Project info */}
                 <div className="work-info">
                   <div className="work-title">
-                    <h3>0{index + 1}</h3>
-                    <div>
-                      <h4>{project.name}</h4>
-                      <p>{project.category}</p>
-                    </div>
+                    <h4>{project.name}</h4>
+                    <p className="work-category">{project.category}</p>
                   </div>
-                  <h4>Description</h4>
-                  <p>{project.description}</p>
-                  <h4 style={{ marginTop: 10 }}>Tools & features</h4>
-                  <p>{project.tools}</p>
+                  <p className="work-description">{project.description}</p>
+                  <div className="work-tools">
+                    {project.tools.split(", ").map((tool, i) => (
+                      <span key={i} className="work-tool-tag">
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Project image */}
                 <WorkImage
                   image={project.image}
                   alt={project.name}
@@ -230,41 +198,43 @@ const Work = () => {
               </div>
             ))}
           </div>
-          {/* Right side arrow overlay */}
-          <span className={`work-nav-arrow work-nav-right ${activeIndex >= projects.length - 2 ? "arrow-disabled" : ""}`} onClick={() => {
-            const progress = Math.min(1, (activeIndex + 2) / (projects.length - 1));
-            animateToProgress(progress);
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </span>
+
+          {/* Floating left arrow — previous */}
+          {!isFirstPage && (
+            <button
+              className="work-floating-arrow work-floating-prev"
+              onClick={scrollPrev}
+              aria-label="Previous projects"
+            >
+              <span className="work-floating-arrow-icon">
+                <MdChevronLeft />
+              </span>
+            </button>
+          )}
+
+          {/* Floating right arrow — next (circular) */}
+          {!isLastPage && (
+            <button
+              className="work-floating-arrow work-floating-next"
+              onClick={scrollNext}
+              aria-label="See more projects"
+            >
+              <span className="work-floating-arrow-icon">
+                <MdChevronRight />
+              </span>
+            </button>
+          )}
         </div>
-        {/* Below cards: Progress dots indicator */}
+
+        {/* Progress dots indicator */}
         <div className="work-scroll-indicator">
-          {projects.map((_, i) => {
-            const isDesktop = window.innerWidth > 768;
-            const dotIndex = isDesktop ? Math.floor(i / 2) : i;
-            const currentDot = isDesktop ? Math.floor(activeIndex / 2) : activeIndex;
-            if (isDesktop && i % 2 !== 0) return null;
-            return (
-              <span
-                key={i}
-                className={`work-scroll-dot ${currentDot === dotIndex ? "active" : ""}`}
-                data-index={i}
-                onClick={() => {
-                  if (window.innerWidth < 768) {
-                    // Mobile: native scroll to card
-                    const cards = document.querySelectorAll(".work-box");
-                    if (cards[i]) {
-                      cards[i].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-                    }
-                  } else {
-                    const progress = i / (projects.length - 1);
-                    animateToProgress(progress);
-                  }
-                }}
-              />
-            );
-          })}
+          {Array.from({ length: totalPages }).map((_, pageIdx) => (
+            <span
+              key={pageIdx}
+              className={`work-scroll-dot ${currentPage === pageIdx ? "active" : ""}`}
+              onClick={() => scrollToPage(pageIdx)}
+            />
+          ))}
         </div>
       </div>
     </div>
