@@ -35,12 +35,10 @@ export default function setSplitText() {
       para.split.words,
       { autoAlpha: 0, y: 80 },
       {
-        autoAlpha: 1,
-        scrollTrigger: {
+        autoAlpha: 1,          scrollTrigger: {
           trigger: para.parentElement?.parentElement,
           toggleActions: ToggleAction,
           start: TriggerStart,
-          lazy: true,
         },
         duration: 0.8,
         ease: "power2.out",
@@ -62,12 +60,10 @@ export default function setSplitText() {
       title.split.chars,
       { autoAlpha: 0, y: 80, rotate: 10 },
       {
-        autoAlpha: 1,
-        scrollTrigger: {
+        autoAlpha: 1,          scrollTrigger: {
           trigger: title.parentElement?.parentElement,
           toggleActions: ToggleAction,
           start: TriggerStart,
-          lazy: true,
         },
         duration: 0.6,
         ease: "power2.out",
