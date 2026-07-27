@@ -12,29 +12,49 @@ import {
 } from "./utils/mouseUtils";
 import setAnimations from "./utils/animationUtils";
 import { setProgress } from "../Loading";
+import { gpu as gpuSettings } from "../../utils/detectGPU";
 
 const Scene = () => {
   const canvasDiv = useRef<HTMLDivElement | null>(null);
   const hoverDivRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef(new THREE.Scene());
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const { setLoading } = useLoading();
 
   const [character, setChar] = useState<THREE.Object3D | null>(null);
+  const [webglError, setWebglError] = useState(false);
+
   useEffect(() => {
-    if (canvasDiv.current) {
-      let rect = canvasDiv.current.getBoundingClientRect();
-      let container = { width: rect.width, height: rect.height };
+    if (!canvasDiv.current) return;
+
+    // Check WebGL support before attempting renderer creation
+    const testCanvas = document.createElement("canvas");
+    const gl = testCanvas.getContext("webgl") || testCanvas.getContext("experimental-webgl");
+    if (!gl) {
+      setWebglError(true);
+      return;
+    }
+
+    try {
+      const rect = canvasDiv.current.getBoundingClientRect();
+      const container = { width: rect.width, height: rect.height };
       const aspect = container.width / container.height;
       const scene = sceneRef.current;
 
       const renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true,
+        antialias: gpuSettings.tier !== "low",
+        powerPreference: gpuSettings.tier === "high" ? "high-performance" : "default",
+        failIfMajorPerformanceCaveat: false,
       });
+      rendererRef.current = renderer;
       renderer.setSize(container.width, container.height);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, gpuSettings.maxPixelRatio));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1;
+
+      // Disable shadows on low-end
+      renderer.shadowMap.enabled = gpuSettings.tier !== "low";
       canvasDiv.current.appendChild(renderer.domElement);
 
       const camera = new THREE.PerspectiveCamera(14.5, aspect, 0.1, 1000);
@@ -50,7 +70,7 @@ const Scene = () => {
       const clock = new THREE.Clock();
 
       const light = setLighting(scene);
-      let progress = setProgress((value) => setLoading(value));
+      const progress = setProgress((value) => setLoading(value));
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
       loadCharacter().then((gltf) => {
@@ -58,7 +78,7 @@ const Scene = () => {
           const animations = setAnimations(gltf);
           hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
           mixer = animations.mixer;
-          let character = gltf.scene;
+          const character = gltf.scene;
           setChar(character);
           scene.add(character);
           headBone = character.getObjectByName("spine006") || null;
@@ -106,8 +126,15 @@ const Scene = () => {
         landingDiv.addEventListener("touchstart", onTouchStart);
         landingDiv.addEventListener("touchend", onTouchEnd);
       }
+
+      let frameCount = 0;
+      const frameSkip = gpuSettings.skipFrames;
       const animate = () => {
+        if (!rendererRef.current) return;
         requestAnimationFrame(animate);
+        frameCount++;
+        // Skip frames based on GPU tier (low=80% skip, medium/high=50% skip)
+        if (frameCount % (frameSkip + 1) !== 0) return;
         if (headBone) {
           handleHeadRotation(
             headBone,
@@ -126,14 +153,16 @@ const Scene = () => {
         renderer.render(scene, camera);
       };
       animate();
+
       return () => {
         clearTimeout(debounce);
         scene.clear();
         renderer.dispose();
+        rendererRef.current = null;
         window.removeEventListener("resize", () =>
           handleResize(renderer, camera, canvasDiv, character!)
         );
-        if (canvasDiv.current) {
+        if (canvasDiv.current && renderer.domElement.parentNode === canvasDiv.current) {
           canvasDiv.current.removeChild(renderer.domElement);
         }
         if (landingDiv) {
@@ -142,8 +171,28 @@ const Scene = () => {
           landingDiv.removeEventListener("touchend", onTouchEnd);
         }
       };
+    } catch (e) {
+      console.warn("WebGL initialization failed:", e);
+      setWebglError(true);
     }
   }, []);
+
+  if (webglError) {
+    return (
+      <div className="character-container">
+        <div
+          className="character-model"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div className="character-rim"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
