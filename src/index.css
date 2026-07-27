@@ -94,11 +94,10 @@ body {
 .techstack {
   width: 100%;
   position: relative;
-  height: var(--vh);
-  margin: auto;
-  margin-top: 180px;
-  margin-bottom: 120px;
-  z-index: 1;
+  height: 100vh;
+  min-height: 600px;
+  margin: 0 auto;
+  z-index: 3;
 }
 
 .techstack h2 {
@@ -116,6 +115,7 @@ body {
 .tech-canvas {
   position: relative;
   z-index: 1;
+  height: 100%;
 }
 
 @media screen and (min-width: 768px) {
@@ -130,15 +130,13 @@ body {
   }
   .techstack {
     height: 80vh;
-    margin-top: 80px;
-    margin-bottom: 60px;
+    min-height: 400px;
   }
 }
 @media screen and (max-width: 600px) {
   .techstack {
     height: 60vh;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    min-height: 300px;
   }
   .techstack h2 {
     font-size: 28px;
