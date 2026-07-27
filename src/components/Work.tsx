@@ -39,7 +39,7 @@ const projects = [
     description:
       "Employee, attendance, leave, payroll, organization, and role management modules. Built onboarding, subscription plans, approval workflows, analytics dashboards, and employee self-service.",
     tools: "Next.js, NestJS, PostgreSQL, Prisma, Redis, AWS",
-    link: "https://github.com/ishfaqmir",
+    link: "https://github.com/Ishfaqmir1",
     image: "/images/placeholder.webp",
   },
   {
